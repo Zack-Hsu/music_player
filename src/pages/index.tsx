@@ -1,14 +1,12 @@
 import Base from "@/elements/templates/Base";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import ZackPlaylist from "@/elements/chunks/playlist/ZackPlaylist";
+
 export default function Home() {
-    const musicFile = "index.mp3";
-    let defaultImgFile = "index.png";
     const [nowPlaying, setNowPlaying] = useState<number>(0);
     const [playList, setPlayList] = useState(ZackPlaylist);
     const [audioData, setAudioData] = useState(playList[nowPlaying]);
     const [player, setPlayer] = useState<HTMLAudioElement>();
-    const [isPlay, setIsPlay] = useState<boolean>(false);
     const controlTime = (dir = "+") => {
         if (!player) return;
         var currentTime = player?.currentTime;
@@ -40,9 +38,7 @@ export default function Home() {
     const handleLoad = () => {
         document.body.addEventListener("keyup", keyboardControl);
     };
-    useEffect(() => {
-        setAudioData(playList[nowPlaying]);
-    }, [nowPlaying]);
+
     useEffect(() => {
         handleLoad();
         return () => {
@@ -56,6 +52,10 @@ export default function Home() {
     }, [player]);
 
     useEffect(() => {
+        setAudioData(playList[nowPlaying]);
+    }, [nowPlaying]);
+
+    useEffect(() => {
         setPlayer(document.querySelector("#audio-target") as HTMLAudioElement);
     }, []);
     return (
@@ -64,6 +64,7 @@ export default function Home() {
                 <div className="row justify-content-center align-items-center card" style={{boxShadow: "4px 6px 6px 2px #adadad"}}>
                     <div className="col-12 text-center">
                         <MusicList
+                            name={audioData.name}
                             playlist={playList}
                             setNowPlaying={(idx: number) => {
                                 setNowPlaying(idx);
@@ -92,8 +93,8 @@ export default function Home() {
                             >
                                 <i className="fa-solid fa-backward" />
                             </button>
-                            <audio id="audio-target" controls src={`${audioData.audioSrc}${audioData.musicFile}`}>
-                                <a href={`${audioData.audioSrc}${audioData.musicFile}`} />
+                            <audio id="audio-target" autoPlay controls src={`${audioData.audioSrc}${audioData.musicFile}`}>
+                                <source src={`${audioData.audioSrc}${audioData.musicFile}`} type="audio/mpeg" />
                             </audio>
                             <button
                                 className="btn btn-sm btn-light"
@@ -133,7 +134,7 @@ function MusicList(props: any) {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
             >
-                PlayList
+                <i className="fa-solid fa-music text-secondary" /> {props.name || "PlayList"}
             </a>
             <ul className={`w-100 dropdown-menu ${active ? "show" : ""}`}>
                 {props.playlist.map((itm: any, i: number) => {

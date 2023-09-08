@@ -1,6 +1,6 @@
 export default [
     {
-        name: "Yuuri",
+        name: "優里- ベテルギウス",
         audioSrc: "/assets/audio/compilation/yuuri_test/",
         musicFile: "index.mp3",
         musicPic: "index.png",
